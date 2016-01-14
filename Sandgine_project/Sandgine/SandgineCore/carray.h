@@ -225,12 +225,13 @@ public:
 
 #include "baseworld.h"
 
+template<typename T>
 void CArray::save(BaseWorld& world, std::ostream& stream)
 {
     stream<<m_capacity
           <<m_size;
 
-    for(int i = 0; i < array.m_size; i++)
+    for(int i = 0; i < m_size; i++)
     {
         m_values[i].save(world, stream);
 
@@ -241,14 +242,15 @@ void CArray::save(BaseWorld& world, std::ostream& stream)
     }
 }
 
+template<typename T>
 void CArray::load(BaseWorld& world, std::istream& stream)
 {
     stream>>m_capacity
           >>m_size;
 
-    resize(array.m_capacity);
+    resize(m_capacity);
 
-    for(int i = 0; i < array.m_size; i++)
+    for(int i = 0; i < m_size; i++)
     {
         m_values[i].load(world, stream);
 

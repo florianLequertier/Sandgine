@@ -59,7 +59,7 @@ public:
     Handler<T> internalToHandler(const InternalHandler<T>& internalHandler);
 
     template<typename T>
-    Handler<T> instantiate(int prefabId);
+    Handler<T> instantiate(std::string prefabId);
 
     Handler<Entity> addEntity(std::shared_ptr<Entity> entity);
 
@@ -100,19 +100,11 @@ Handler<T> BaseWorld::internalToHandler(const InternalHandler<T>& internalHandle
 }
 
 template<typename T>
-Handler<T> BaseWorld::instantiate(int prefabId)
+Handler<T> BaseWorld::instantiate(std::string prefabId)
 {
-    Prefab prefab = PrefabFactory::instance().clone(prefabId);
+    std::shared_ptr<Prefab> prefab = PrefabFactory::instance().get(prefabId);
 
-    Handler<Entity> newEntity = addEntity(prefab.toEntity());
-
-    auto iterator = prefab.getComponentIterator();
-    for(iterator = prefab.componentBegin(); iterator!= prefab.componentEnd(); i++)
-    {
-        iterator->addToWorld(this);
-    }
-
-    return newEntity;
+    return prefab->toEntity(this);
 }
 
 template<typename T>

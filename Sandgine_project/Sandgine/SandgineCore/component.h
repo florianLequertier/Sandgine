@@ -24,6 +24,7 @@ protected:
     Handler<Entity> m_owner;
 
 public:
+
     Component(Handler<Entity> owner = Handler<Entity>());
 
     virtual std::shared_ptr<Component> clone() = 0;
@@ -40,6 +41,8 @@ public:
 
     void save(BaseWorld& world, std::ostream& stream);
     void load(BaseWorld& world, std::istream& stream);
+    void save(std::ostream& stream);
+    void load(std::istream& stream);
 
     virtual void addToEntity(BaseWorld& world, Entity& entity) = 0;
 

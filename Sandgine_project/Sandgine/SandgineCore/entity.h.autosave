@@ -52,7 +52,7 @@ public:
 
     std::shared_ptr<Prefab> toPrefab(BaseWorld &world);
 
-    void restoreComponentLinks();
+    void restoreComponentLinks(BaseWorld& world);
 
 };
 

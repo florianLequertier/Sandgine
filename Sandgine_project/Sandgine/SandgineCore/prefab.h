@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "handler.h"
 #include "carray.h"
 #include "entity.h"
 #include "component.h"
@@ -16,13 +17,13 @@ class Prefab
 private:
     int m_prefabId;
     std::string m_name;
-    std::vector<std::shared_ptr<Component>> m_components;
+    std::vector<std::shared_ptr<PrefabComponent>> m_components;
 
 public:
-    Prefab(std::string name, int prefabId = 0);
+    Prefab(std::string name = "", int prefabId = 0);
     Prefab(const Entity& entity, const World& world);
 
-    std::shared_ptr<Entity> toEntity();
+    Handler<Entity> toEntity(BaseWorld &world);
 
     void addComponent(std::shared_ptr<Component> component);
     void removeComponent(std::shared_ptr<Component> component);

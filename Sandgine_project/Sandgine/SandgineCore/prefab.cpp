@@ -18,10 +18,17 @@ Prefab::Prefab(const Entity& entity, const World& world)
     }
 }
 
-std::shared_ptr<Entity> Prefab::toEntity()
+Handler<Entity> Prefab::toEntity(BaseWorld& world)
 {
     auto newEntity = std::make_shared<Entity>(m_name, m_prefabId);
-    return newEntity;
+    Handler<Entity> entityHandler = world.addEntity(newEntity);
+
+    for(int i = 0; i < m_components.size(); i++)
+    {
+        m_components[i]->addToEntity(world, entityHandler);
+    }
+
+    return entityHandler;
 }
 
 void Prefab::addComponent(std::shared_ptr<Component> component)

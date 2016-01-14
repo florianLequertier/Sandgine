@@ -111,6 +111,14 @@ std::shared_ptr<Prefab> Entity::toPrefab(BaseWorld& world)
     return newPrefab;
 }
 
+void Entity::restoreComponentLinks(BaseWorld& world)
+{
+    for(int i = 0; i < m_components.size(); i++)
+    {
+        world.internalToHandler( m_components[i] )->setOwner(world.getComponent<Entity>(m_Id));
+    }
+}
+
 //TODO move it to Qt wrapper
 /*
 std::vector<QWidget*> Entity::getComponentHandlers(QWidget* parent)

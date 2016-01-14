@@ -59,3 +59,15 @@ void Component::load(BaseWorld& world, std::istream& stream)
           >>m_typeId;
     m_owner = world.readHandler(stream);
 }
+
+void Component::save(std::ostream& stream)
+{
+    stream<<m_id
+          <<m_typeId
+}
+
+void Component::load(std::istream& stream)
+{
+    stream>>m_id
+          >>m_typeId;
+}

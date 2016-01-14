@@ -34,7 +34,7 @@ void PrefabFactory::add(std::shared_ptr<Prefab> prefab)
     m_prefabs[prefab.getId()] = prefab;
 }
 
-void PrefabFactory::remove(int prefabId)
+void PrefabFactory::remove(std::string prefabId)
 {
     auto findIt = std::find(m_prefabs.begin(), m_prefabs.end(), prefabId);
 
@@ -49,7 +49,7 @@ void PrefabFactory::clear()
     m_prefabs.clear();
 }
 
-std::shared_ptr<Prefab> PrefabFactory::get(int prefabId)
+std::shared_ptr<Prefab> PrefabFactory::get(std::string prefabId)
 {
     auto findIt = std::find(m_prefabs.begin(), m_prefabs.end(), prefabId);
 
@@ -59,7 +59,7 @@ std::shared_ptr<Prefab> PrefabFactory::get(int prefabId)
         return std::shared_ptr<Prefab>();
 }
 
-std::shared_ptr<Prefab> PrefabFactory::clone(int prefabId)
+std::shared_ptr<Prefab> PrefabFactory::clone(std::string prefabId)
 {
     auto findIt = std::find(m_prefabs.begin(), m_prefabs.end(), prefabId);
 
@@ -67,5 +67,29 @@ std::shared_ptr<Prefab> PrefabFactory::clone(int prefabId)
         return std::make_shared<Prefab>( **findIt );
     else
         return std::shared_ptr<Prefab>();
+}
+
+
+void PrefabFactory::load(std::istream& stream)
+{
+    int prefabCount = 0;
+
+    stream>>prefabCount;
+
+    for(int i = 0; i < prefabCount; i++)
+    {
+        auto newPrefab = std::make_shared<Prefab>();
+        newPrefab->load(stream);
+    }
+}
+
+void PrefabFactory::save(std::ostream& stream)
+{
+    stream<<m_prefabs.size();
+
+    for(int i = 0; i < m_prefabs.size(); i++)
+    {
+        m_prefabs[i]->save(stream);
+    }
 }
 
