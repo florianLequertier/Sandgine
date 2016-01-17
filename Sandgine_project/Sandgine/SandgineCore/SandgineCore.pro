@@ -24,7 +24,9 @@ SOURCES += sandginecore.cpp \
     transformable.cpp \
     handler.cpp \
     componentfactory.cpp \
-    sprite.cpp
+    sprite.cpp \
+    singleton.cpp \
+    worldobject.cpp
 
 HEADERS += sandginecore.h \
     carray.h \
@@ -37,7 +39,9 @@ HEADERS += sandginecore.h \
     transformable.h \
     handler.h \
     componentfactory.h \
-    sprite.h
+    sprite.h \
+    singleton.h \
+    worldobject.h
 
 unix {
     target.path = /usr/lib

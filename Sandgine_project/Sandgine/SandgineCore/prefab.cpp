@@ -1,6 +1,6 @@
 #include "prefab.h"
 
-Prefab::Prefab(std::string name, int prefabId) : m_name(name), m_prefabId(prefabId)
+Prefab::Prefab(std::string name, std::string prefabId) : m_name(name), m_prefabId(prefabId)
 {
 
 }
@@ -60,7 +60,7 @@ void Prefab::save(World& world, std::ostream& stream)
 void Prefab::load(World& world, std::istream& stream)
 {
     int componentCount = 0;
-    std::type_index typeId;
+    std::string typeId;
 
     stream>>m_prefabId
           >>m_name
@@ -74,5 +74,17 @@ void Prefab::load(World& world, std::istream& stream)
         m_components[i] = ComponentFactory::instance().copy(typeId);
         m_components[i].load(world, stream);
     }
+}
+
+std::vector<std::pair<int, std::string>> Prefab::getComponentIds()
+{
+    std::vector<std::pair<int, std::string>> componentIds;
+
+    for(auto& component : m_components)
+    {
+        componentIds.push_back(std::make_pair(component->getComponentId(), component->getTypeId()));
+    }
+
+    return componentIds;
 }
 

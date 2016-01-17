@@ -1,5 +1,25 @@
+#include "baseworld.h"
 #include "carray.h"
 
+BaseCArray::BaseCArray() : m_size(0), m_capacity(0)
+{
+
+}
+
+BaseCArray::~BaseCArray()
+{
+
+}
+
+/**
+ * @brief return the value pointed in pointers container as WorldObject
+ * @param i
+ * @return
+ */
+WorldObject& BaseCArray::operator[] (unsigned int i)
+{
+    return *m_basePtrs[m_valuePtrs[i]];
+}
 
 /**
  * @brief The size of the array.
@@ -98,8 +118,7 @@ bool BaseCArray::remove(int index)
 
 //return the index in m_container of the i th member of m_paluePtrs
 // return the real index of the active element i
-template<typename T>
-int CArray<T>::indexOf(int i)
+int BaseCArray::indexOf(int i)
 {
     if(i >= 0 && i < m_valuePtrs.size())
         return m_valuePtrs[i];
@@ -108,11 +127,106 @@ int CArray<T>::indexOf(int i)
 }
 
 
+///////////////////////////////
+////////////CARRAY////////////
+//////////////////////////////
+
 
 template<class T>
 void CArray<T>::sort()
 {
     //nothing
+}
+
+
+
+template<typename T>
+void CArray<T>::save(std::ostream& stream, BaseWorld* world)
+{
+    stream<<m_capacity
+          <<m_size;
+
+    for(int i = 0; i < m_size; i++)
+    {
+        m_values[i].save(stream, world);
+
+        stream<<(int)m_states[i]
+              <<m_valuePtrs[i]
+              <<m_empties[i]
+              <<m_generations[i];
+    }
+}
+
+template<typename T>
+void CArray<T>::load(std::istream& stream, BaseWorld* world)
+{
+    stream>>m_capacity
+          >>m_size;
+
+    resize(m_capacity);
+
+    for(int i = 0; i < m_size; i++)
+    {
+        m_values[i].load(stream, world);
+        m_basePtrs[i] = &m_values[i];
+
+        int boolInt = 0;
+        stream>>boolInt;
+              m_states[i] = (boolInt == 0) ? false : true;
+        stream>>m_valuePtrs[i]
+              >>m_empties[i]
+              >>m_generations[i];
+    }
+}
+
+template<typename T>
+CArray<T>::CArray()
+{
+    resize(1024);
+}
+
+template<typename T>
+CArray<T>::~CArray()
+{
+}
+
+/**
+ * @brief clear the CArray without destroy it in memory.
+ */
+template<typename T>
+void CArray<T>::clear()
+{
+    m_size = 0;
+    resize(m_capacity);
+}
+
+
+/**
+ * @brief Simply resize the array.
+ * @param size
+ */
+template<typename T>
+void CArray<T>::resize(unsigned int size)
+{
+    m_capacity = size;
+    if(m_capacity < size)
+        m_size = m_capacity;
+
+    m_values.resize(m_capacity);
+    m_states.resize(m_capacity);
+    m_valuePtrs.resize(m_capacity);
+    m_empties.resize(m_capacity);
+    m_generations.resize(m_capacity);
+    m_basePtrs.resize(m_capacity);
+
+    for(int i = m_size; i < m_capacity; i++)
+    {
+        m_states[i] = false;
+        m_valuePtrs[i] = i;
+        m_empties[i] = i;
+        m_generations[i] = 0;
+        m_basePtrs[i] = nullptr;
+    }
 }
 
 

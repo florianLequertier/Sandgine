@@ -1,73 +1,56 @@
-#include "entity.h"
 #include "component.h"
 #include "baseworld.h"
 
 
-Component::Component(Handler<Entity> owner) : m_typeId(typeid(Component)), m_owner(owner)
+Component::Component(int id, InternalHandler owner) : base( id , typeid(Component).name() ) , m_owner(owner)
 {
 
 }
 
-Handler<Entity> Component::getOwner()
+Component::~Component()
 {
-    return m_owner;
+
 }
 
-void Component::setOwner(Handler<Entity> owner)
+Handler<Entity> Component::getOwner(BaseWorld &world)
+{
+    return world.internalToHandler<Entity>(m_owner);
+}
+
+void Component::setOwner(InternalHandler owner)
 {
     m_owner = owner;
 }
 
-Handler<Entity> Component::getParent()
+Handler<Entity> Component::getParent(BaseWorld& world)
 {
     if(m_owner)
-        return m_owner->getParent();
+        return world.internalToHandler<Entity>(m_owner)->getParent(world);
     else
         return Handler<Entity>();
 }
 
-std::type_index Component::getTypeId() const
+int Component::getComponentId() const
 {
-    return m_id.type;
+    return m_componentId;
 }
 
-void Component::setType(ComponentType type)
+void Component::setComponentId(int id)
 {
-    m_id.type = type;
+    m_componentId = id;
 }
 
-int Component::getId() const
+void Component::save(std::ostream& stream, BaseWorld* world)
 {
-    return m_id;
+    base::save(stream, world);
+
+    stream<<m_owner;
 }
 
-void Component::setId(int id)
+void Component::load(std::istream& stream, BaseWorld* world)
 {
-    m_id = id;
-}
+    base::load(stream, world);
 
-void Component::save(BaseWorld& world, std::ostream& stream)
-{
-    stream<<m_id
-          <<m_typeId
-          <<m_owner;
-}
-
-void Component::load(BaseWorld& world, std::istream& stream)
-{
-    stream>>m_id
-          >>m_typeId;
-    m_owner = world.readHandler(stream);
-}
-
-void Component::save(std::ostream& stream)
-{
-    stream<<m_id
-          <<m_typeId
-}
-
-void Component::load(std::istream& stream)
-{
-    stream>>m_id
-          >>m_typeId;
+    if(world != nullptr)
+        m_owner = world->readInternalHandler(stream);
 }

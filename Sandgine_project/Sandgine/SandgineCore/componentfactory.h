@@ -3,9 +3,11 @@
 
 #include <map>
 
+#include "singleton.h"
+
 #include "component.h"
 
-class ComponentFactory
+class ComponentFactory : public Singleton<ComponentFactory>
 {
 private:
     std::map<int, std::shared_ptr<Component>> m_components;

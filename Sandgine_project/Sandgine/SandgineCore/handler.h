@@ -3,43 +3,64 @@
 
 #include <iostream>
 
-#include "carray.h"
+#include "worldobject.h"
 
+template<class T>
+class CArray;
+
+template<class T>
+class Handler;
+
+class BaseCArray;
+
+class World;
+
+/*
+ * Only deserializable throught the BaseWorld.readInternalHandler().
+ */
 struct InternalHandler
 {
     int m_index;
+    BaseCArray* m_datas;
     int m_generation;
-    std::type_index m_typeId;
+    std::string m_typeId;
 
-    inline InternalHandler(int index, int generation, std::type_index typeId) : m_index(index), m_generation(generation), m_typeId(typeId)
+    inline InternalHandler(int index = 0, int generation = 0, std::string typeId = "") : m_datas(nullptr), m_index(index), m_generation(generation), m_typeId(typeId)
     {
 
     }
 
-    inline InternalHandler(const Handler& handler)
+    template<typename T>
+    inline InternalHandler(const Handler<T>& handler)
     {
         m_index = handler.m_index;
         m_generation = handler.m_generation;
         m_typeId = handler.m_typeId;
     }
 
-    template<typename T>
-    friend std::ostream& operator<<(std::ostream& stream, const InternalHandler<T>& internalHandler);
-    template<typename T>
-    friend std::istream& operator>>(std::istream& stream, InternalHandler<T>& internalHandler);
+    WorldObject& get() const;
+
+    bool isNull() const;
+
+    WorldObject* operator->();
+
+    WorldObject& operator*();
+
+    inline operator bool() const
+    {
+        return !isNull();
+    }
+
+    friend std::ostream& operator<<(std::ostream& stream, const InternalHandler& handler);
+
 };
 
-template<typename T>
-std::ostream& operator<<(std::ostream& stream, const InternalHandler<T>& internalHandler)
+std::ostream& operator<<(std::ostream& stream, const InternalHandler& handler)
 {
-    stream<<internalHandler.m_index<<internalHandler.m_generation<<internalHandler.m_typeId;
+    stream<<handler.m_index<<handler.m_generation<<handler.m_typeId;
 }
 
-template<typename T>
-std::istream& operator>>(std::istream& stream, InternalHandler<T>& internalHandler)
-{
-    stream>>internalHandler.m_index>>internalHandler.m_generation>>internalHandler.m_typeId;
-}
+
 
 /*
  * Only deserializable throught the BaseWorld.readHandler().
@@ -50,12 +71,12 @@ struct Handler
     int m_index;
     CArray<T>* m_datas;
     int m_generation;
-    std::type_info m_typeId;
+    std::string m_typeId;
 
     inline Handler(CArray<T>* arrayPtr = nullptr, int index = -1): m_datas(arrayPtr), m_index(index)
     {
         m_generation = m_datas->getGeneration(m_index);
-        m_typeId = typeid(T);
+        m_typeId = typeid(T).name();
     }
 
     T& get() const
@@ -86,7 +107,6 @@ struct Handler
         return !isNull();
     }
 
-    template<typename T>
     friend std::ostream& operator<<(std::ostream& stream, const Handler<T>& handler);
 
 };

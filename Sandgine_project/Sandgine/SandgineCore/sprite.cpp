@@ -11,7 +11,7 @@ Sprite::~Sprite()
 
 }
 
-std::shared_ptr<Component> Sprite::clone()
+std::shared_ptr<WorldObject> Sprite::clone()
 {
     return std::make_shared<Sprite>(*this);
 }

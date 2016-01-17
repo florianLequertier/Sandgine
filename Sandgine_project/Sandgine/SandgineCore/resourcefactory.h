@@ -6,13 +6,15 @@
 #include <memory>
 #include <vector>
 
-#include "resource.h"
+#include "singleton.h"
+
+//#include "resource.h"  TODO
 
 enum ResourceTypeId{NONE, TEXTURE, TILE_SET, SOUND, RESOURCE_TYPE_COUNT};
 
 std::shared_ptr<Resource> loadResource(ResourceTypeId typeId, const std::string& resourcePath);
 
-class ResourceFactory
+class ResourceFactory : public Singleton<ResourceFactory>
 {
 private:
     std::map<std::string, std::shared_ptr<Resource>> m_textures;

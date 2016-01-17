@@ -8,41 +8,39 @@
 #include <memory>
 #include <functional>
 #include <iostream>
+
 #include "carray.h"
 #include "handler.h"
+#include "worldobject.h"
 
-class Entity;
 class BaseWorld;
+class Entity;
 
 
-class Component
+class Component : public WorldObject
 {
 
 protected:
-    int m_id;
-    std::type_index m_typeId;
-    Handler<Entity> m_owner;
+    typedef WorldObject base;
+
+    int m_componentId;
+    InternalHandler m_owner;
 
 public:
 
-    Component(Handler<Entity> owner = Handler<Entity>());
+    Component(int id = 0, InternalHandler owner = InternalHandler());
+    virtual ~Component();
 
-    virtual std::shared_ptr<Component> clone() = 0;
+    Handler<Entity> getOwner(BaseWorld& world);
+    void setOwner(InternalHandler owner);
+    Handler<Entity> getParent(BaseWorld& world); //return owner's parent
 
-    Handler<Entity> getOwner();
-    void setOwner(Handler<Entity> owner);
-    Handler<Entity> getParent(); //return owner's parent
 
-    std::type_index getTypeId() const;
-    void setType(std::type_index type);
+    int getComponentId() const;
+    void setComponentId(int id);
 
-    int getId() const;
-    void setId(int id);
-
-    void save(BaseWorld& world, std::ostream& stream);
-    void load(BaseWorld& world, std::istream& stream);
-    void save(std::ostream& stream);
-    void load(std::istream& stream);
+    void save(std::ostream& stream, BaseWorld* world = nullptr );
+    void load(std::istream& stream, BaseWorld* world = nullptr );
 
     virtual void addToEntity(BaseWorld& world, Entity& entity) = 0;
 

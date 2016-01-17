@@ -3,10 +3,12 @@
 
 #include <map>
 
+#include "singleton.h"
+
 #include "prefab.h"
 #include "entity.h"
 
-class PrefabFactory
+class PrefabFactory : public Singleton<PrefabFactory>
 {
 private:
     std::map<std::string, std::shared_ptr<Prefab>> m_prefabs;
@@ -23,6 +25,8 @@ public:
 
     void load(std::istream& stream);
     void save(std::ostream& stream);
+
+    std::vector<std::pair<int, std::string>> getComponentIds(std::string prefabId);
 };
 
 #endif // PREFABFACTORY_H

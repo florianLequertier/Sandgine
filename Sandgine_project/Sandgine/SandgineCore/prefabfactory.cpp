@@ -93,3 +93,13 @@ void PrefabFactory::save(std::ostream& stream)
     }
 }
 
+std::vector<std::pair<int, std::string>> PrefabFactory::getComponentIds(std::string prefabId)
+{
+    auto findIt = std::find(m_prefabs.begin(), m_prefabs.end(), prefabId);
+
+    if(findIt != m_prefabs.end())
+        return findIt->getComponentIds();
+    else
+        return std::vector<std::pair<int, std::string>>();
+}
+

@@ -15,12 +15,12 @@ class World;
 class Prefab
 {
 private:
-    int m_prefabId;
+    std::string m_prefabId;
     std::string m_name;
-    std::vector<std::shared_ptr<PrefabComponent>> m_components;
+    std::vector<std::shared_ptr<Component>> m_components;
 
 public:
-    Prefab(std::string name = "", int prefabId = 0);
+    Prefab(std::string name = "", std::string prefabId = 0);
     Prefab(const Entity& entity, const World& world);
 
     Handler<Entity> toEntity(BaseWorld &world);
@@ -30,6 +30,8 @@ public:
 
     void save(World& world, std::ostream& stream);
     void load(World& world, std::istream& stream);
+
+    std::vector<std::pair<int, std::string>> getComponentIds();
 };
 
 #endif // PREFAB_H

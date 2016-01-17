@@ -8,30 +8,44 @@
 #include <vector>
 #include <memory>
 
+#include "handler.h"
+#include "worldobject.h"
+
 class Component;
 class BaseWorld;
 class Prefab;
 
-class Entity
+class Entity : public WorldObject
 {    
     friend class Prefab;
 
 private:
-    int m_entityId;
-    int m_prefabId;
+    typedef WorldObject base;
+
+    std::string m_prefabId;
     std::string m_name;
     std::vector<InternalHandler> m_components;
 
-    Handler<Entity> m_parent; //???
+    InternalHandler m_parent; //???
 
 public:
     Entity(std::string name = "", int id = 0);
     virtual ~Entity();
-    std::shared_ptr<Entity> clone();
 
+    //clone design patern
+    virtual std::shared_ptr<WorldObject> clone() override;
+
+    //serialization management
+    void save(std::ostream& stream, BaseWorld* world = nullptr );
+    void load(std::istream& stream, BaseWorld* world = nullptr );
+
+    //getters/setters
     int getId() const;
-    int getPrefabId() const;
+    std::string getPrefabId() const;
+    std::string getName() const;
+    void setName(std::string name);
 
+    //component management
     template<typename T>
     Handler<T> addComponent(BaseWorld& world);
     template<typename T>
@@ -41,72 +55,15 @@ public:
     template<typename T>
     Handler<T> getComponent(BaseWorld& world);
 
-    Handler<Entity> getParent(); //???
+    //parenting management
+    Handler<Entity> getParent(const BaseWorld& world); //???
+    void setParent(InternalHandler parent); //???
 
-    std::string getName() const;
-    void setName(std::string name);
-
-    void save(BaseWorld& world, std::ostream& stream);
-
-    void load(BaseWorld& world, std::istream& stream);
-
+    //prefab management
     std::shared_ptr<Prefab> toPrefab(BaseWorld &world);
-
-    void restoreComponentLinks();
 
 };
 
-#include "component.h"
-#include "baseworld.h"
-
-template<typename T>
-Handler<T> Entity::addComponent(BaseWorld& world)
-{
-    Handler<T> handler = world.addComponent<T>();
-    m_components.push_back(handler);
-
-    return handler;
-}
-
-template<typename T>
-Handler<T> Entity::addComponent(BaseWorld& world, const Component& component)
-{
-    Handler<T> handler = world.addComponent<T>(component);
-    m_components.push_back(handler);
-
-    return handler;
-}
-
-template<typename T>
-void Entity::removeComponent(BaseWorld& world)
-{
-    auto it = std::find_if(m_components.begin(), m_components.end(), [](const Component& c){
-                                                                            return typeid(c) == typeid(T);
-                                                                        });
-
-    if(it != m_components.end())
-    {
-        if(world.removeComponent<T>(*it))
-            m_components.erase(it);
-        else
-            std::cerr<<"problem while removing a component of type : "<<typeid(T).name()<<" from an entity"<<std::endl
-                     <<"the component is present in Entity but not in the World."<<std::endl;
-    }
-}
-
-template<typename T>
-Handler<T> Entity::getComponent(BaseWorld& world)
-{
-    auto it = std::find_if(m_components.begin(), m_components.end(), [](const Component& c){
-                                                                            return typeid(c) == typeid(T); // ???
-                                                                        });
-    if(it != m_components.end())
-    {
-        return world.internalToHandler<T>(m_components[i]);
-    }
-    else
-        return Handler<T>();
-}
 
 
 #endif // ENTITY_H

@@ -12,7 +12,7 @@ public:
     Sprite();
     virtual ~Sprite();
 
-    virtual std::shared_ptr<Component> clone() override;
+    virtual std::shared_ptr<WorldObject> clone() override;
     virtual void addToEntity(BaseWorld& world, Entity& entity) override;
 };
 
