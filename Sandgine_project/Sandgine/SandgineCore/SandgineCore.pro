@@ -26,7 +26,8 @@ SOURCES += sandginecore.cpp \
     componentfactory.cpp \
     sprite.cpp \
     singleton.cpp \
-    worldobject.cpp
+    worldobject.cpp \
+    resource.cpp
 
 HEADERS += sandginecore.h \
     carray.h \
@@ -41,7 +42,8 @@ HEADERS += sandginecore.h \
     componentfactory.h \
     sprite.h \
     singleton.h \
-    worldobject.h
+    worldobject.h \
+    resource.h
 
 unix {
     target.path = /usr/lib

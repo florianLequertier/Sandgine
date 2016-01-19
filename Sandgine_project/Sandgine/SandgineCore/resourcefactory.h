@@ -5,10 +5,10 @@
 #include <iostream>
 #include <memory>
 #include <vector>
+#include <assert.h>
 
+#include "resource.h"
 #include "singleton.h"
-
-//#include "resource.h"  TODO
 
 enum ResourceTypeId{NONE, TEXTURE, TILE_SET, SOUND, RESOURCE_TYPE_COUNT};
 
@@ -27,6 +27,8 @@ public:
     ResourceFactory();
 
     void add(ResourceTypeId typeId, std::shared_ptr<Resource> resourceToAdd);
+
+    void add(ResourceTypeId typeId, const std::string& resourceName, std::vector<std::string>& resourcePath);
 
     void add(ResourceTypeId typeId, const std::string& resourceName, const std::string& resourcePath);
 

@@ -1,22 +1,42 @@
 #include "resourcefactory.h"
 
+std::shared_ptr<Resource> loadResource(ResourceTypeId typeId, std::vector<std::string>& resourcePath)
+{
+    switch(typeId)
+    {
+        case ResourceTypeId::TEXTURE:
+            auto newResource_texture = std::make_shared<Texture>(resourcePath[0]);
+            return newResource_texture;
+        break;
+        case ResourceTypeId::TILE_SET:
+            assert(resourcePath.size() == 2);
+            auto newResource_tileSet = std::make_shared<TileSet>(resourcePath[0], resourcePath[1]);
+            return newResource_tileSet;
+        break;
+        case ResourceTypeId::SOUND:
+            auto newResource_Sound = std::make_shared<Sound>(resourcePath[0]);
+            return newResource_Sound;
+        break;
+        default:
+            return std::shared_ptr<Resource>();
+        break;
+    }
+}
+
 std::shared_ptr<Resource> loadResource(ResourceTypeId typeId, const std::string& resourcePath)
 {
     switch(typeId)
     {
         case ResourceTypeId::TEXTURE:
             auto newResource_texture = std::make_shared<Texture>(resourcePath);
-            newResource_texture.load(resourcePath);
             return newResource_texture;
         break;
         case ResourceTypeId::TILE_SET:
             auto newResource_tileSet = std::make_shared<TileSet>(resourcePath);
-            newResource_tileSet.load(resourcePath);
             return newResource_tileSet;
         break;
         case ResourceTypeId::SOUND:
             auto newResource_Sound = std::make_shared<Sound>(resourcePath);
-            newResource_Sound.load(resourcePath);
             return newResource_Sound;
         break;
         default:
@@ -41,6 +61,24 @@ void ResourceFactory::add(ResourceTypeId typeId, std::shared_ptr<Resource> resou
             return;
         }
         resourceContainerPtr[resourceToAdd->getName()] = resourceToAdd;
+    }
+    else
+    {
+        std::cerr<<"error : There is no valid resource container which match with the given key."<<std::endl;
+    }
+}
+
+void ResourceFactory::add(ResourceTypeId typeId, const std::string& resourceName, std::vector<std::string>& resourcePath)
+{
+    auto resourceContainerPtr = m_resourceTypesMapping[typeId];
+    if(resourceContainerPtr != nullptr)
+    {
+        if(resourceContainerPtr.contains(resourceName))
+        {
+            std::cerr<<"warning : resource can't be added to the resourceFactory, because there is already a resource with name : "<resourceName<<std::endl;
+            return;
+        }
+        resourceContainerPtr[resourceName] = loadResource(typeId, resourcePath);
     }
     else
     {
